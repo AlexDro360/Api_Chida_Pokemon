@@ -125,10 +125,9 @@ class UsuarioController extends Controller
             ], 404);
         }
     
-        // Validación de los datos enviados
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:55',
-            'avatar' => 'required|url', // Verificar que sea una URL válida
+            'avatar' => 'required|url',
             'apellidoP' => 'required|max:35',
             'apellidoM' => 'required|max:35',
             'password' => 'required|max:100',
@@ -143,12 +142,11 @@ class UsuarioController extends Controller
             ], 400);
         }
     
-        // Actualizar los datos del usuario
         $usuario->name = $request->name;
         $usuario->avatar = $request->avatar;
         $usuario->apellidoP = $request->apellidoP;
         $usuario->apellidoM = $request->apellidoM;
-        $usuario->password = $request->password; // No encripta la contraseña
+        $usuario->password = $request->password;
         $usuario->phone = $request->phone;
     
         $usuario->save();
