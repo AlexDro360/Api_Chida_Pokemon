@@ -115,54 +115,52 @@ class UsuarioController extends Controller
         return response()->json($data,200);
     }
 
-    public function update($id,Request $request){
+    public function update($id, Request $request) {
         $usuario = Usuario::find($id);
-
-        if(!$usuario){
-            $data = [
+    
+        if (!$usuario) {
+            return response()->json([
                 'message' => 'Usuario no encontrado',
                 'status' => 404
-            ];
-            return response()->json($data, 404);
+            ], 404);
         }
-
+    
+        // Validación de los datos enviados
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:55',
-            'avatar' => 'required',
+            'avatar' => 'required|url', // Verificar que sea una URL válida
             'apellidoP' => 'required|max:35',
-            'apellidoM'=> 'required|max:35',
-            'email' => 'required|email|unique:usuario',
+            'apellidoM' => 'required|max:35',
             'password' => 'required|max:100',
             'phone' => 'required|digits:10'
         ]);
-
-        if($validator->fails()){
-            $data = [
-                'menssage' => 'Error en la Validacion de datos',
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Error en la validación de datos',
                 'errors' => $validator->errors(),
                 'status' => 400
-            ];
-            return response()->json($data, 400);
+            ], 400);
         }
-
-        $usuario -> name = $request->name;
-        $usuario -> avatar = $request->avatar;
-        $usuario -> apellidoP = $request->apellidoP;
-        $usuario -> apellidoM = $request->apellidoM;
-        $usuario -> email = $request->email;
-        $usuario -> password = $request->password;
-        $usuario -> phone = $request->phone;
-
+    
+        // Actualizar los datos del usuario
+        $usuario->name = $request->name;
+        $usuario->avatar = $request->avatar;
+        $usuario->apellidoP = $request->apellidoP;
+        $usuario->apellidoM = $request->apellidoM;
+        $usuario->password = $request->password; // No encripta la contraseña
+        $usuario->phone = $request->phone;
+    
         $usuario->save();
-
-        $data =[
-            'message' => 'Usuario Actualizado',
+    
+        return response()->json([
+            'message' => 'Usuario actualizado correctamente',
             'usuario' => $usuario,
             'status' => 200
-        ];
-        return response()->json($data,200);
-
+        ], 200);
     }
+    
+    
 
     public function updateParcial($id,Request $request){
         $usuario = Usuario::find($id);
