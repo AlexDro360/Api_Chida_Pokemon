@@ -17,7 +17,18 @@ class PokemonController extends Controller
     {
         $pokemon = Pokemon::all();
         $data = [
-            'pokemons' => $pokemon -> load('habilidades'),
+            'pokemons' => $pokemon->load('habilidades'),
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function buscar($nombre)
+    {
+        $pokemon = Pokemon::where("nombre", "LIKE", "%{$nombre}%")->get(); 
+
+        $data = [
+            'pokemons' => $pokemon->load('habilidades'),
             'status' => 200
         ];
         return response()->json($data, 200);
@@ -48,10 +59,10 @@ class PokemonController extends Controller
             'ataque_especial' => 'required|numeric',
             'defensa_especial' => 'required|numeric',
             'velocidad' => 'required|numeric',
-            'habilidades' => 'nullable|array', 
-            'habilidades.*' => 'exists:habilidads,id', 
+            'habilidades' => 'nullable|array',
+            'habilidades.*' => 'exists:habilidads,id',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Error en la validación de los datos',
@@ -59,32 +70,31 @@ class PokemonController extends Controller
                 'status' => 400,
             ], 400);
         }
-    
+
         try {
             $pokemon = Pokemon::create($request->only([
-                'nombre', 
-                'avatar', 
-                'descripcion', 
-                'peso', 
-                'altura', 
+                'nombre',
+                'avatar',
+                'descripcion',
+                'peso',
+                'altura',
                 'hp',
-                'ataque', 
-                'defensa', 
-                'ataque_especial', 
-                'defensa_especial', 
+                'ataque',
+                'defensa',
+                'ataque_especial',
+                'defensa_especial',
                 'velocidad'
             ]));
-    
+
             if ($request->has('habilidades')) {
-                $pokemon->habilidades()->sync($request->habilidades); 
+                $pokemon->habilidades()->sync($request->habilidades);
             }
-    
+
             return response()->json([
                 'pokemon' => $pokemon->load('habilidades'),
                 'message' => 'Pokémon creado exitosamente',
                 'status' => 201,
             ], 201);
-    
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error en la creación del Pokémon',
@@ -93,7 +103,7 @@ class PokemonController extends Controller
             ], 500);
         }
     }
-    
+
 
 
     /**
@@ -154,8 +164,7 @@ class PokemonController extends Controller
             'ataque_especial' => 'required|numeric',
             'defensa_especial' => 'required|numeric',
             'velocidad' => 'required|numeric',
-            'habilidades' => 'nullable|array', 
-            'habilidades.*' => 'exists:habilidads,id', 
+            'habilidades' => 'nullable|array'
 
         ]);
 
@@ -170,26 +179,38 @@ class PokemonController extends Controller
 
         try {
             $pokemon->update($request->only([
-                'nombre', 
-                'avatar', 
+                'nombre',
+                'avatar',
                 'descripcion',
-                'peso', 
-                'altura', 
-                'hp', 
-                'ataque', 
-                'defensa', 
-                'ataque_especial', 
-                'defensa_especial', 
+                'peso',
+                'altura',
+                'hp',
+                'ataque',
+                'defensa',
+                'ataque_especial',
+                'defensa_especial',
                 'velocidad'
             ]));
-    
+
             if ($request->has('habilidades')) {
-                $pokemon->habilidades()->sync($request->habilidades); 
+                foreach ($request->habilidades as $habilidadData) {
+                    $habilidad = Habilidad::find($habilidadData['id']);
+
+                    if ($habilidad) {
+                        $habilidad->update([
+                            'nombre' => $habilidadData['nombre'] ?? $habilidad->nombre,
+                            'descripcion' => $habilidadData['descripcion'] ?? $habilidad->descripcion,
+                        ]);
+                    }
+                }
+
+                $habilidadesIds = collect($request->habilidades)->pluck('id');
+                $pokemon->habilidades()->sync($habilidadesIds);
             }
-    
+
             return response()->json([
                 'mensaje' => 'Pokémon actualizado exitosamente',
-                'pokemon' => $pokemon->load('habilidades'), 
+                'pokemon' => $pokemon->load('habilidades'),
                 'status' => 200,
             ], 200);
         } catch (\Exception $e) {
@@ -205,33 +226,31 @@ class PokemonController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id)
-{
-    try {
-        $pokemon = Pokemon::find($id);
+    {
+        try {
+            $pokemon = Pokemon::find($id);
 
-        if (!$pokemon) {
+            if (!$pokemon) {
+                return response()->json([
+                    'mensaje' => 'Pokémon no encontrado',
+                    'status' => 404,
+                ], 404);
+            }
+
+            $pokemon->habilidades()->detach();
+
+            $pokemon->delete();
+
             return response()->json([
-                'mensaje' => 'Pokémon no encontrado',
-                'status' => 404,
-            ], 404);
+                'message' => 'Pokémon eliminado',
+                'status' => 200,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al eliminar el Pokémon',
+                'error' => $e->getMessage(),
+                'status' => 500,
+            ], 500);
         }
-
-        $pokemon->habilidades()->detach();
-
-        $pokemon->delete();
-
-        return response()->json([
-            'message' => 'Pokémon eliminado',
-            'status' => 200,
-        ], 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'message' => 'Error al eliminar el Pokémon',
-            'error' => $e->getMessage(),
-            'status' => 500,
-        ], 500);
     }
-}
-
 }

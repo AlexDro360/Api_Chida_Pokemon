@@ -16,6 +16,8 @@ Route::post('/pokemons',[PokemonController::class, 'store']);
 Route::put('/pokemons/{id}',[PokemonController::class, 'update']);
 Route::delete('/pokemons/{id}',[PokemonController::class, 'destroy']);
 
+Route::get('/pokemons/buscar/{nombre}',[PokemonController::class, 'buscar']);
+
 Route::get('/habilidades',[HabilidadController::class, 'index']);
 Route::get('/habilidades/{id}',[HabilidadController::class, 'show']);
 Route::post('/habilidades',[HabilidadController::class, 'store']);
