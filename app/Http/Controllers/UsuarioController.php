@@ -158,9 +158,8 @@ class UsuarioController extends Controller
         ], 200);
     }
     
-    
-
-    public function updateParcial($id,Request $request){
+    public function updateParcial($id,Request $request)
+    {
         $usuario = Usuario::find($id);
 
         if(!$usuario){
@@ -229,4 +228,14 @@ class UsuarioController extends Controller
         return response()->json($data,200);
 
     }
+
+    public function cuantosHay()
+    {
+        $cuantos = Usuario::count();
+        $data = [
+            'cantidad' => $cuantos,
+            'status' => 200
+        ];
+        return response()->json($data,200);
+    }   
 }
