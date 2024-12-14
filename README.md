@@ -1,3 +1,72 @@
+![{FAE33641-F2CE-4381-9B48-783420BAAB95}](https://github.com/user-attachments/assets/ef9d3109-a824-4b18-a143-ec8dc8b01516)# Reporte
+
+## Base de datos
+Para la creacion de la API se utilo Laravel en donde se creo la siguiente base de datos 
+
+### Tabla Usuarios
+Esta tabla contiene a los usuarios de la aplicacion.
+![{20C1BAE0-A2ED-4D64-9248-D4B7F4B1A4EC}](https://github.com/user-attachments/assets/5b8c7d17-3cca-4b49-bcd8-d12d640401fb)
+
+### Tabla Pokemon
+Esta tablña gurada la informacion de los pokemones.
+![{2F96C320-85BE-43B9-87A7-EA97574BE934}](https://github.com/user-attachments/assets/0e437d71-ca23-4b81-b7e4-b84391687ec7)
+
+### Tabla Habilidad
+Esta tabla guarda toda la informacion de las habilidades de los pokemones.
+![{84438BBB-6813-440A-9BC8-4B5F878D5289}](https://github.com/user-attachments/assets/1c76c5d4-28f0-4fa8-98ee-e41b44ed4c53)
+
+### Tabla habilida_pokemon
+Esta tabla surgue de la relacion de muchos a muchos que hay entre las habilidades y los pokemon.
+![{FF87D9F8-7B5B-4DFF-B571-A8CECE6CD2ED}](https://github.com/user-attachments/assets/481ed304-fd85-443b-a18e-e0cfcce653c6)
+
+Para que esta relacion funciones correctamente en los modelos de Pokemon y Habilidad debe de especificarse la realcion de muchos a muchos de la siguiente manera en donde se especifica la tabla que los relaciona y las llavez foraneas de cada uno:
+
+Tabla habilidad:
+![{2B60CE56-150F-4718-9A4F-34C414F08942}](https://github.com/user-attachments/assets/72435116-f367-4675-bc9f-18dfe43b2e36)
+
+Tabla Pokemon:
+![{D9218D7A-BCD3-49A8-87DB-CA31B829EEBF}](https://github.com/user-attachments/assets/e0798466-7287-4234-89e9-ca27c493a710)
+
+## Controladores 
+Para interactuar con la API y lograr realizar peticiones GET, POST, PUT, DELETE se deben especificar los metodos en los constroladores los cuales que haran las consultas a la base de datos y regresaran los datos e informacion requerida cuando se realicen estas peticiones. A continuacion se detallas los metodos que se crearon para cada peticion.
+
+### Pokemon Controller
+
+#### Index 
+Este metodo regresa la lista de todos los pokemones que hay en la base de datos con sus habilidades.
+Lo que hace este metodo es primero obtener todos los pokemones de la tabla Pokemon con Pokemon::al(), despues se crear un JSON el cual contiene la lista de pokemon y el estatus de la peticion el cual sera 200 si todo fue correcto asi mismo con load('habilidades') se cargan las habilidades de cada pokemon.
+![{FAE33641-F2CE-4381-9B48-783420BAAB95}](https://github.com/user-attachments/assets/9ceb9439-57d4-4225-84db-7073c2153456)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
