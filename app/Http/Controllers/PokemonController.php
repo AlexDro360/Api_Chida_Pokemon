@@ -59,8 +59,7 @@ class PokemonController extends Controller
             'ataque_especial' => 'required|numeric',
             'defensa_especial' => 'required|numeric',
             'velocidad' => 'required|numeric',
-            'habilidades' => 'nullable|array',
-            'habilidades.*' => 'exists:habilidads,id',
+            'habilidades' => 'nullable|array'
         ]);
 
         if ($validator->fails()) {
@@ -87,8 +86,20 @@ class PokemonController extends Controller
             ]));
 
             if ($request->has('habilidades')) {
-                $pokemon->habilidades()->sync($request->habilidades);
+                $habilidadesIds = collect(); 
+    
+                foreach ($request->habilidades as $habilidadData) {
+                    $habilidad = Habilidad::create([
+                        'nombre' => $habilidadData['nombre'],
+                        'descripcion' => $habilidadData['descripcion'],
+                    ]);
+    
+                    $habilidadesIds->push($habilidad->id);
+                }
+    
+                $pokemon->habilidades()->sync($habilidadesIds);
             }
+    
 
             return response()->json([
                 'pokemon' => $pokemon->load('habilidades'),
