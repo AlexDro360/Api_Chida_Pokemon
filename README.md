@@ -23,18 +23,18 @@ Esta tabla surgue de la relacion de muchos a muchos que hay entre las habilidade
 
 ![{FF87D9F8-7B5B-4DFF-B571-A8CECE6CD2ED}](https://github.com/user-attachments/assets/481ed304-fd85-443b-a18e-e0cfcce653c6)
 
-Para que esta relacion funciones correctamente en los modelos de Pokemon y Habilidad debe de especificarse la realcion de muchos a muchos de la siguiente manera en donde se especifica la tabla que los relaciona y las llavez foraneas de cada uno:
+Para que esta relacion funciones correctamente en los modelos de Pokemon y Habilidad debe de especificarse la realcion de muchos a muchos de la siguiente manera en donde se especifica la tabla que los relaciona y las llaves foraneas de cada uno, esto se hace para facilitar obtener las habilidades de los pokemones sintener que ingresar deirectamente a la tabla de habilidad_pokemon:
 
-Tabla habilidad:
+Especificacion de la relacion en la tabla habilidad :
 
 ![{2B60CE56-150F-4718-9A4F-34C414F08942}](https://github.com/user-attachments/assets/72435116-f367-4675-bc9f-18dfe43b2e36)
 
-Tabla Pokemon:
+Especificacion de la relacion en la tabla Pokemon:
 
 ![{D9218D7A-BCD3-49A8-87DB-CA31B829EEBF}](https://github.com/user-attachments/assets/e0798466-7287-4234-89e9-ca27c493a710)
 
 ## Controladores 
-Para interactuar con la API y lograr realizar peticiones GET, POST, PUT, DELETE se deben especificar los metodos en los constroladores los cuales que haran las consultas a la base de datos y regresaran los datos e informacion requerida cuando se realicen estas peticiones. A continuacion se detallas los metodos que se crearon para cada peticion.
+Para interactuar con la API y lograr realizar peticiones GET, POST, PUT, DELETE se deben especificar los metodos en los constroladores que haran las consultas a la base de datos y regresaran los datos e informacion requerida cuando se realicen estas peticiones. A continuacion se detallan los metodos que se crearon para cada peticion.
 
 ### Pokemon Controller
 
@@ -48,7 +48,7 @@ Lo que hace este metodo es primero obtener todos los pokemones de la tabla Pokem
 
 
 #### buscar
-Este metodo busca a los pokemones en la base de datos que coincida con el nombre que se le haya pasado al metodo, para esto realiza una consulta a la base de datos filtrando con where el campo nombre que coincida con los nombres, poestriormente regresa un JSON con la lista de pokemon que coincidan y el estatus 200 asi mismo se cargan las habilidades de cada pokemon.
+Este metodo busca a los pokemones en la base de datos que coincida con el nombre que se le haya pasado al metodo, para esto realiza una consulta a la base de datos filtrando con where el campo nombre que coincida con los nombres, posteriormente regresa un JSON con la lista de pokemon que coincidan y el estatus 200 asi mismo se cargan las habilidades de cada pokemon.
 
 ![{D382EBD5-A913-4E6B-86B4-35B5763555E1}](https://github.com/user-attachments/assets/a2cb847d-8bba-47fc-89da-a8ff4921de53)
 
@@ -56,7 +56,7 @@ Este metodo busca a los pokemones en la base de datos que coincida con el nombre
 
 
 #### Store
-Este metodo sirve para crear un nuevo pokemon en la base de datos primero recibe una JSON con los datos a guardar en request para lo cual primero se validan cada uno de los datos del pokemon usando un validator, y guardando el resultado en una variable llamada validator. 
+Este metodo sirve para crear un nuevo pokemon en la base de datos primero recibe una JSON con los datos a guardar en request, para lo cual primero se validan cada uno de los datos del pokemon usando un validator, y guardando el resultado en una variable llamada validator. 
 Despues se verifa si la validacion fallo, si es asi se retorna un mensaje de error, con un status de error y la respuesta de la validacion que contiene los motivos por el cual no se validaron los datos.
 
 ![{DB19F8DE-984E-496C-BB3F-6B58643974DC}](https://github.com/user-attachments/assets/9a3877af-9e2c-485d-a9a7-e7042dbd20e4)
