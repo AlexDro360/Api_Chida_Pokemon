@@ -1,4 +1,4 @@
-![{78CC80F1-F492-4DA1-BF6B-573B0CEAAB2E}](https://github.com/user-attachments/assets/28141074-34f8-4655-aa78-22863d2af253)# Reporte
+# Reporte
 
 ## Base de datos
 Para la creacion de la API se utilo Laravel en donde se creo la siguiente base de datos 
