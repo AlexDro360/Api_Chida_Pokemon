@@ -217,3 +217,1211 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+# Creacion del Api de Pokemones
+Primero crearemos las migraciones de usuarios, pokemones, habilidades de pokemones y tabla intermedia entre habilidades y pokemones dado que tiene una relacion de muchos a muchos por que un pokemon puede terne de una a muchas habilidades y una habilidad puede pertenecer a uno o muchos pokemones.
+
+## Migraciones
+La migracion se crea dado que esta es la parte de la base de datos y es donde se alacenara todos los datos, esto se hara con los comandos de.
+- ```bash
+`php artisan make:migration create_usuario_table`
+```
+- ```bash
+`php artisan make:migration create_pokemon_table`
+```
+- ```bash
+`php artisan make:migration create_habilidads_table`
+```
+- ```bash
+`php artisan make:migration create_habilidad_pokemon_table`
+```
+
+### Creación de la tabla usuarios
+
+```php
+<?php
+
+// Importamos las herramientas necesarias para trabajar con migraciones
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+// Creamos una clase anónima que extiende la clase Migration
+return new class extends Migration
+{
+    // Este método "up" se ejecuta cuando aplicamos la migración
+    public function up(): void
+    {
+        // Creamos una tabla llamada 'usuario' con Schema y definimos sus columnas con Blueprint
+        Schema::create('usuario', function (Blueprint $table) {
+            $table->id(); // Columna de clave primaria auto-incremental, usada como identificador único
+            $table->string('name'); // Columna para almacenar el nombre del usuario (máximo 255 caracteres)
+            $table->string('avatar'); // Columna para guardar la URL o el nombre del archivo del avatar del usuario
+            $table->string('apellidoP'); // Columna para el apellido paterno del usuario
+            $table->string('apellidoM'); // Columna para el apellido materno del usuario
+            $table->string('email'); // Columna para el correo electrónico del usuario (debería ser único en muchos casos)
+            $table->string('password'); // Columna para almacenar la contraseña
+            $table->string('phone'); // Columna para guardar el número de teléfono del usuario
+            $table->timestamps(); // Agrega las columnas que nos dice cuando se creo y la ultima modificaión
+        });
+    }
+
+    // Este método "down" se ejecuta para revertir la migración
+    public function down(): void
+    {
+        // Elimina la tabla 'usuario' si existe en la base de datos
+        Schema::dropIfExists('usuario');
+    }
+};
+
+```
+### Creación de la tabla pokemon
+```php
+<?php
+
+// Importamos las herramientas necesarias para trabajar con migraciones
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+// Creamos una clase anónima que extiende la clase Migration
+return new class extends Migration
+{
+    // Este método "up" se ejecuta cuando aplicamos la migración
+    public function up(): void
+    {
+        // Utilizamos Schema para crear una tabla llamada 'pokemon'
+        Schema::create('pokemon', function (Blueprint $table) {
+            $table->id(); // Columna de clave primaria con auto-incremento, esencial para identificar registros únicos
+            $table->string('nombre'); // Columna para almacenar el nombre del Pokémon
+            $table->string('avatar'); // Columna para guardar la URL o el nombre del archivo de la imagen del Pokémon
+            $table->string('descripcion'); // Columna para almacenar una breve descripción del Pokémon
+            $table->integer('peso'); // Columna para almacenar el peso del Pokémon
+            $table->integer('altura'); // Columna para guardar la altura del Pokémon
+            $table->integer('hp'); // Columna para los puntos de salud (HP) del Pokémon
+            $table->integer('ataque'); // Columna para la estadística de ataque
+            $table->integer('defensa'); // Columna para la estadística de defensa
+            $table->integer('ataque_especial'); // Columna para la estadística de ataque especial
+            $table->integer('defensa_especial'); // Columna para la estadística de defensa especial
+            $table->integer('velocidad'); // Columna para la estadística de velocidad
+            $table->timestamps(); // Agrega las columnas 'created_at' y 'updated_at' automáticamente para registrar cuándo se creó o modificó un registro
+        });
+    }
+
+    // Este método "down" se ejecuta para revertir la migración
+    public function down(): void
+    {
+        // Elimina la tabla 'pokemon' si existe en la base de datos
+        Schema::dropIfExists('pokemon');
+    }
+};
+```
+### Creación de la tabla habilidad
+
+```php
+<?php
+
+// Importamos las herramientas necesarias para trabajar con migraciones
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+// Creamos una clase anónima que extiende la clase Migration
+return new class extends Migration
+{
+    /**
+     * Ejecuta la migración.
+     */
+    public function up(): void
+    {
+        // Crea una tabla llamada 'habilidads' en la base de datos
+        Schema::create('habilidads', function (Blueprint $table) {
+            $table->id(); // Clave primaria auto-incremental, usada para identificar registros únicos
+            $table->string('nombre'); // Columna para almacenar el nombre de la habilidad (máximo 255 caracteres)
+            $table->string('descripcion'); // Columna para almacenar una descripción de la habilidad
+            $table->timestamps(); // Agrega las columnas que nos dice cuando se creo y la ultima modificaión
+        });
+    }
+
+    /**
+     * Revierte la migración.
+     */
+    public function down(): void
+    {
+        // Elimina la tabla 'habilidads' si existe
+        Schema::dropIfExists('habilidads');
+    }
+};
+```
+
+### Creación de la tabla de muchos a muchos entre habilidades y pokemones
+
+```php
+<?php
+
+// Importamos las herramientas necesarias para trabajar con migraciones
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+// Creamos una clase anónima que extiende la clase Migration
+return new class extends Migration
+{
+    /**
+     * Ejecuta la migración.
+     */
+    public function up(): void
+    {
+        // Crea una tabla intermedia llamada 'habilidad_pokemon' para gestionar la relación
+        Schema::create('habilidad_pokemon', function (Blueprint $table) {
+            $table->id(); // Clave primaria auto-incremental para identificar cada registro
+            $table->unsignedBigInteger('pokemon_id'); // Columna para relacionar con la tabla 'pokemon'
+            $table->unsignedBigInteger('habilidad_id'); // Columna para relacionar con la tabla 'habilidads'
+            
+            // Definimos la clave foránea 'pokemon_id' que referencia al campo 'id' en la tabla 'pokemon'
+            $table->foreign('pokemon_id')
+                ->references('id')->on('pokemon') // Apunta a la columna 'id' de la tabla 'pokemon'
+                ->onDelete('restrict'); // Si intentamos borrar un registro relacionado, se restringe la operación
+
+            // Definimos la clave foránea 'habilidad_id' que referencia al campo 'id' en la tabla 'habilidads'
+            $table->foreign('habilidad_id')
+                ->references('id')->on('habilidads') // Apunta a la columna 'id' de la tabla 'habilidads'
+                ->onDelete('restrict'); // Restringe la eliminación si hay una relación activa
+
+            $table->timestamps(); // Agrega las columnas que nos dice cuando se creo y la ultima modificaión
+        });
+    }
+
+    /**
+     * Revierte la migración.
+     */
+    public function down(): void
+    {
+        // Elimina la tabla 'habilidad_pokemon' si existe
+        Schema::dropIfExists('habilidad_pokemon');
+    }
+};
+```
+## Creacion de los modelos
+En esta parte haremos un modelo para cada tabla dado que estos nos permiten hacer consultas a la base de datos.
+
+### Creación de los modelos
+
+Crearemos los modelos con los comandos:
+- ```bash
+php artisan make:model Usuario
+```
+- ```bash
+php artisan make:model Pokemon
+```
+- ```bash
+php artisan make:model Habilidad
+```
+- ```bash
+php artisan make:model habilidad_pokemon
+```
+
+### Creación del modelo usuarios
+
+```php
+<?php
+
+namespace App\Models; // Espacio de nombres que indica dónde se encuentra este modelo en el proyecto
+
+use Illuminate\Database\Eloquent\Model; // Importa la clase base Model de Eloquent
+use Illuminate\Database\Eloquent\Factories\HasFactory; // Importa el trait HasFactory para usar factories en este modelo
+
+class Usuario extends Model
+{
+    // Uso del trait HasFactory, que permite generar datos de prueba con factories
+    use HasFactory;
+
+    // Especifica el nombre de la tabla asociada a este modelo
+    protected $table = 'usuario'; 
+    // Por defecto, Eloquent asume que la tabla tiene el nombre pluralizado del modelo ("usuarios" para este caso),
+    // pero aquí especificamos que el modelo corresponde a la tabla "usuario".
+
+    // Define los campos que se pueden asignar masivamente al modelo
+    protected $fillable = [
+        'name',        // Nombre del usuario
+        'avatar',      // URL o ruta del avatar del usuario
+        'apellidoP',   // Apellido paterno del usuario
+        'apellidoM',   // Apellido materno del usuario
+        'email',       // Correo electrónico del usuario
+        'password',    // Contraseña (debe ser protegida, normalmente con hash)
+        'phone'        // Teléfono del usuario
+    ];
+    // El arreglo `$fillable` sirve para proteger el modelo contra la asignación masiva no deseada.
+    // Solo estos campos pueden ser asignados con métodos como `create()` o `update()`.
+
+    // Otros atributos o métodos personalizados pueden definirse aquí para añadir lógica al modelo.
+}
+```
+
+### Creación del modelo pokemones
+
+```php
+<?php
+
+namespace App\Models; // Define el espacio de nombres donde se encuentra este modelo
+
+use Illuminate\Database\Eloquent\Model; // Importa la clase base Model de Eloquent
+
+class Pokemon extends Model
+{
+    // Método que define una relación "muchos a muchos" con el modelo Habilidad
+    public function habilidades()
+    {
+        return $this->belongsToMany(
+            Habilidad::class,        // Modelo relacionado: Habilidad
+            'habilidad_pokemon',     // Tabla intermedia: habilidad_pokemon
+            'pokemon_id',            // Columna de este modelo en la tabla intermedia
+            'habilidad_id'           // Columna del modelo relacionado en la tabla intermedia
+        );
+    }
+
+    // Especifica el nombre de la tabla asociada a este modelo
+    protected $table = 'pokemon';
+    // Laravel asume que el nombre de la tabla será el plural del modelo ("pokemons"), 
+    // pero aquí especificamos que usaremos "pokemon" como nombre exacto.
+
+    // Define los campos que pueden ser asignados masivamente
+    protected $fillable = [
+        'nombre',            // Nombre del Pokémon
+        'avatar',            // URL o ruta de la imagen del Pokémon
+        'descripcion',       // Breve descripción del Pokémon
+        'peso',              // Peso del Pokémon
+        'altura',            // Altura del Pokémon
+        'hp',                // Puntos de vida (HP) del Pokémon
+        'ataque',            // Estadística de ataque
+        'defensa',           // Estadística de defensa
+        'ataque_especial',   // Estadística de ataque especial
+        'defensa_especial',  // Estadística de defensa especial
+        'velocidad'          // Velocidad del Pokémon
+    ];
+    // Estos campos pueden ser asignados en operaciones como `create()` o `update()`.
+}
+
+```
+
+### Creación del modelo habilidades
+
+```php
+<?php
+
+namespace App\Models; // Define el espacio de nombres donde se encuentra este modelo
+
+use Illuminate\Database\Eloquent\Model; // Importa la clase base Model de Eloquent
+
+class Habilidad extends Model
+{
+    // Método que define una relación "muchos a muchos" con el modelo Pokemon
+    public function pokemon()
+    {
+        return $this->belongsToMany(
+            Pokemon::class,        // Modelo relacionado: Pokemon
+            'habilidad_pokemon',   // Tabla intermedia: habilidad_pokemon
+            'habilidad_id',        // Columna de este modelo en la tabla intermedia
+            'pokemon_id'           // Columna del modelo relacionado en la tabla intermedia
+        );
+    }
+
+    // Especifica el nombre de la tabla asociada a este modelo
+    protected $table = 'habilidads';
+    // Laravel asume que el nombre de la tabla será el plural del modelo ("habilidads"), 
+    // pero aquí especificamos que usaremos "habilidads" como nombre exacto.
+
+    // Define los campos que pueden ser asignados masivamente
+    protected $fillable = [
+        'nombre',       // Nombre de la habilidad
+        'descripcion'   // Descripción de la habilidad
+    ];
+    // Estos campos pueden ser asignados en operaciones como `create()` o `update()`.
+}
+
+```
+
+### Creación del modelo habilidades de pokemon
+
+```php
+<?php
+
+namespace App\Models; // Define el espacio de nombres donde se encuentra este modelo
+
+use Illuminate\Database\Eloquent\Model; // Importa la clase base Model de Eloquent
+
+class habilidad_pokemon extends Model
+{
+    // Este modelo está asociado con la tabla intermedia 'habilidad_pokemon', 
+    // que establece una relación "muchos a muchos" entre Pokémon y Habilidades.
+    // No es necesario especificar ninguna relación aquí, ya que ya está definida en los modelos `Pokemon` y `Habilidad`.
+
+    // En este caso, el modelo `habilidad_pokemon` no necesita métodos ni propiedades adicionales.
+    // Laravel manejará la tabla intermedia automáticamente a través de las relaciones definidas en los modelos relacionados.
+}
+```
+
+## Creación de los Controladores
+La Api necesita controladores dado que estos son las consultas que se le hacen a la base dedatos y son los que nos permiten recuperar los datos, ingresar datos, modificar datos entre mas cosas. Para crear un controlador ejecutaremos los comandos:
+
+- ```bash
+php artisan make:controller UsuarioController
+```
+- ```bash
+php artisan make:controller PokemonController
+```
+- ```bash
+php artisan make:controller UsuarioController
+```
+- ```bash
+php artisan make:controller HabilidadPokemonController
+```
+
+### Creación de Crontrolador de Usuarios
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request; // Para manejar las solicitudes HTTP
+use App\Models\Usuario; // El modelo Usuario para interactuar con la tabla 'usuarios'
+use Illuminate\Support\Facades\Validator; // Para validar los datos recibidos en las solicitudes
+
+class UsuarioController extends Controller
+{
+    // Método que devuelve todos los usuarios
+    public function index()
+    {
+        // Obtener todos los usuarios de la base de datos
+        $usuarios = Usuario::all();
+
+        // Preparar la respuesta en formato JSON con los usuarios obtenidos
+        $data = [
+            'usuarios' => $usuarios, // Datos de los usuarios
+            'status' => 200 // Código de estado HTTP 200 para éxito
+        ];
+        
+        // Retorna la respuesta JSON con los datos y el código de estado 200
+        return response()->json($data, 200);
+    }
+
+    // Método para crear un nuevo usuario en la base de datos
+    public function store(Request $request)
+    {
+        // Validación de los datos recibidos en la solicitud (request)
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:55', // El nombre es obligatorio y no puede exceder 55 caracteres
+            'avatar' => 'required', // El avatar es obligatorio
+            'apellidoP' => 'required|max:35', // El apellido paterno es obligatorio y no puede exceder 35 caracteres
+            'apellidoM'=> 'required|max:35', // El apellido materno es obligatorio y no puede exceder 35 caracteres
+            'email' => 'required|email|unique:usuario', // El email es obligatorio, debe ser único y tener formato de correo electrónico
+            'password' => 'required|max:100', // La contraseña es obligatoria y no puede exceder 100 caracteres
+            'phone' => 'required|digits:10' // El teléfono es obligatorio y debe ser un número de 10 dígitos
+        ]);
+
+        // Si la validación falla, retorna un mensaje de error
+        if($validator->fails()){
+            // Preparar el mensaje de error con los detalles de la validación fallida
+            $data = [
+                'menssage' => 'Error en la Validacion de datos',
+                'errors' => $validator->errors(), // Errores de validación
+                'status' => 400 // Código de estado 400 para Bad Request
+            ];
+            return response()->json($data, 400); // Retorna la respuesta con el error de validación
+        }
+
+        // Si la validación es exitosa, crea el usuario con los datos proporcionados
+        $usuario = Usuario::create([
+            'name' => $request->name,
+            'avatar' => $request->avatar,
+            'apellidoP' => $request->apellidoP,
+            'apellidoM'=> $request->apellidoM,
+            'email' => $request->email,
+            'password' => $request->password,
+            'phone' => $request->phone
+        ]);
+
+        // Si la creación del usuario falla, retorna un mensaje de error
+        if(!$usuario){
+            // Retorna un mensaje indicando que hubo un error al crear el usuario
+            $data = [
+                'menssage' => 'Error al crear el Usuario',
+                'status' => 500 // Código de estado 500 para Error Interno del Servidor
+            ];
+            return response()->json($data, 500); // Retorna la respuesta con el mensaje de error
+        }
+
+        // Si el usuario fue creado exitosamente, retorna la información del usuario con un código de estado 201 (Creado)
+        $data = [
+            'usuario' => $usuario, // El usuario recién creado
+            'status' => 201 // Código de estado 201 para creación exitosa
+        ];
+        return response()->json($data, 201); // Retorna la respuesta con el usuario creado
+    }
+
+    // Método para mostrar los detalles de un usuario por su ID
+    public function show($id)
+    {
+        // Buscar un usuario por su ID
+        $usuario = Usuario::find($id);
+
+        // Si el usuario no existe, retorna un mensaje de error
+        if(!$usuario){
+            // Retorna un mensaje de error con código 404 (No Encontrado)
+            $data = [
+                'message' => 'Usuario no encontrado',
+                'status' => 404 // Código de estado 404 para Not Found
+            ];
+            return response()->json($data, 404); // Retorna la respuesta con el mensaje de error
+        }
+        
+        // Si el usuario existe, prepara la respuesta con los datos del usuario
+        $data = [
+            'usuario' => $usuario, // Datos del usuario encontrado
+            'status' => 200 // Código de estado 200 para éxito
+        ];
+        return response()->json($data, 200); // Retorna la respuesta con el usuario
+    }
+
+    // Método para eliminar un usuario por su ID
+    public function destroy($id)
+    {
+        // Buscar el usuario por su ID
+        $usuario = Usuario::find($id);
+
+        // Si el usuario no existe, retorna un mensaje de error
+        if(!$usuario){
+            // Retorna un mensaje de error con código 404 (No Encontrado)
+            $data = [
+                'message' => 'Usuario no encontrado',
+                'status' => 404 // Código de estado 404 para Not Found
+            ];
+            return response()->json($data, 404); // Retorna la respuesta con el mensaje de error
+        }
+        
+        // Elimina el usuario de la base de datos
+        $usuario->delete();
+
+        // Retorna un mensaje confirmando que el usuario fue eliminado con código de estado 200 (OK)
+        $data = [
+            'message' => 'Usuario Eliminado',
+            'status' => 200 // Código de estado 200 para éxito
+        ];
+        return response()->json($data, 200); // Retorna la respuesta con la confirmación de eliminación
+    }
+
+    // Método para actualizar un usuario por su ID
+    public function update($id, Request $request)
+    {
+        // Buscar el usuario por su ID
+        $usuario = Usuario::find($id);
+
+        // Si el usuario no existe, retorna un mensaje de error
+        if (!$usuario) {
+            // Retorna un mensaje indicando que el usuario no fue encontrado
+            return response()->json([
+                'message' => 'Usuario no encontrado',
+                'status' => 404 // Código de estado 404 para No Encontrado
+            ], 404); // Retorna la respuesta con el código de error 404
+        }
+
+        // Valida los datos recibidos en la solicitud de actualización
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:55',
+            'avatar' => 'required|url', // Avatar debe ser una URL válida
+            'apellidoP' => 'required|max:35',
+            'apellidoM' => 'required|max:35',
+            'password' => 'required|max:100',
+            'phone' => 'required|digits:10'
+        ]);
+
+        // Si la validación falla, retorna un error con los detalles de la falla
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Error en la validación de datos',
+                'errors' => $validator->errors(), // Errores de validación
+                'status' => 400 // Código de estado 400 para Bad Request
+            ], 400); // Retorna la respuesta con los detalles del error
+        }
+
+        // Si la validación es exitosa, actualiza los datos del usuario
+        $usuario->name = $request->name;
+        $usuario->avatar = $request->avatar;
+        $usuario->apellidoP = $request->apellidoP;
+        $usuario->apellidoM = $request->apellidoM;
+        $usuario->password = $request->password;
+        $usuario->phone = $request->phone;
+
+        // Guarda los cambios en la base de datos
+        $usuario->save();
+
+        // Retorna un mensaje confirmando que el usuario ha sido actualizado correctamente
+        return response()->json([
+            'message' => 'Usuario actualizado correctamente',
+            'usuario' => $usuario, // Los datos del usuario actualizado
+            'status' => 200 // Código de estado 200 para éxito
+        ], 200); // Retorna la respuesta con el usuario actualizado
+    }
+    
+    // Método para actualizar parcialmente los datos de un usuario
+    public function updateParcial($id, Request $request)
+    {
+        // Busca al usuario por su ID
+        $usuario = Usuario::find($id);
+
+        // Si el usuario no existe, retorna un mensaje de error
+        if (!$usuario) {
+            $data = [
+                'message' => 'Usuario no encontrado',
+                'status' => 404 // Código de estado 404 para No Encontrado
+            ];
+            return response()->json($data, 404); // Retorna la respuesta con el error
+        }
+
+        // Valida solo los campos que se están actualizando
+        $validator = Validator::make($request->all(), [
+            'name' => 'max:55', // El nombre es opcional pero no puede exceder 55 caracteres
+            'avatar' => 'required', // Avatar es obligatorio
+            'apellidoP' => 'max:35', // El apellido paterno es opcional pero no puede exceder 35 caracteres
+            'apellidoM'=> 'max:35', // El apellido materno es opcional pero no puede exceder 35 caracteres
+            'password' => 'max:100', // La contraseña es opcional pero no puede exceder 100 caracteres
+            'phone' => 'digits:10' // El teléfono es opcional pero debe tener 10 dígitos
+        ]);
+
+        // Si la validación falla, retorna un mensaje de error
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Error en la validación de datos',
+                'errors' => $validator->errors(), // Errores de validación
+                'status' => 400 // Código de estado 400 para Bad Request
+            ], 400); // Retorna la respuesta con los detalles del error
+        }
+
+        // Actualiza solo los campos que fueron proporcionados en la solicitud
+        if ($request->has('name')) {
+            $usuario->name = $request->name;
+        }
+        if ($request->has('avatar')) {
+            $usuario->avatar = $request->avatar;
+        }
+        if ($request->has('apellidoP')) {
+            $usuario->apellidoP = $request->apellidoP;
+        }
+        if ($request->has('apellidoM')) {
+            $usuario->apellidoM = $request->apellidoM;
+        }
+        if ($request->has('password')) {
+            $usuario->password = $request->password;
+        }
+        if ($request->has('phone')) {
+            $usuario->phone = $request->phone;
+        }
+
+        // Guarda los cambios en la base de datos
+        $usuario->save();
+
+        // Retorna un mensaje confirmando que el usuario fue actualizado correctamente
+        return response()->json([
+            'message' => 'Usuario actualizado correctamente',
+            'usuario' => $usuario, // Datos del usuario actualizado
+            'status' => 200 // Código de estado 200 para éxito
+        ], 200); // Retorna la respuesta con el usuario actualizado
+    }
+}
+
+```
+
+### Creación de Crontrolador de Pokemon
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Pokemon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use App\Models\Habilidad;
+
+class PokemonController extends Controller
+{
+    /**
+     * Mostrar una lista de todos los recursos (pokemones).
+     */
+    public function index()
+    {
+        // Obtiene todos los pokemones, incluyendo sus habilidades relacionadas
+        $pokemon = Pokemon::all();
+        $data = [
+            'pokemons' => $pokemon->load('habilidades'), // Carga las habilidades relacionadas
+            'status' => 200 // Código de estado 200 para éxito
+        ];
+        return response()->json($data, 200); // Retorna la lista de pokemones con sus habilidades
+    }
+
+    /**
+     * Buscar pokemones por nombre.
+     */
+    public function buscar($nombre)
+    {
+        // Filtra los pokemones cuyo nombre contenga la cadena proporcionada
+        $pokemon = Pokemon::where("nombre", "LIKE", "%{$nombre}%")->get(); 
+
+        $data = [
+            'pokemons' => $pokemon->load('habilidades'), // Carga las habilidades relacionadas
+            'status' => 200 // Código de estado 200 para éxito
+        ];
+        return response()->json($data, 200); // Retorna la lista de pokemones encontrados
+    }
+
+    /**
+     * Crear un nuevo recurso (Pokémon).
+     */
+    public function store(Request $request)
+    {
+        // Define las reglas de validación para los datos de entrada
+        $validator = Validator::make($request->all(), [
+            'nombre' => 'required|string',
+            'avatar' => 'required|string',
+            'descripcion' => 'required|string',
+            'peso' => 'required|numeric',
+            'altura' => 'required|numeric',
+            'hp' => 'required|numeric',
+            'ataque' => 'required|numeric',
+            'defensa' => 'required|numeric',
+            'ataque_especial' => 'required|numeric',
+            'defensa_especial' => 'required|numeric',
+            'velocidad' => 'required|numeric',
+            'habilidades' => 'nullable|array' // Habilidades opcionales
+        ]);
+
+        // Si la validación falla, retorna un mensaje de error
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Error en la validación de los datos',
+                'errors' => $validator->errors(),
+                'status' => 400, // Código de estado 400 para Bad Request
+            ], 400);
+        }
+
+        try {
+            // Crea un nuevo Pokémon con los datos proporcionados
+            $pokemon = Pokemon::create($request->only([
+                'nombre', 'avatar', 'descripcion', 'peso', 'altura', 'hp', 
+                'ataque', 'defensa', 'ataque_especial', 'defensa_especial', 'velocidad'
+            ]));
+
+            // Si se proporcionan habilidades, las crea y asocia al Pokémon
+            if ($request->has('habilidades')) {
+                $habilidadesIds = collect(); // Colección para almacenar los IDs de habilidades
+                
+                foreach ($request->habilidades as $habilidadData) {
+                    // Crea una habilidad y guarda su ID
+                    $habilidad = Habilidad::create([
+                        'nombre' => $habilidadData['nombre'],
+                        'descripcion' => $habilidadData['descripcion'],
+                    ]);
+    
+                    $habilidadesIds->push($habilidad->id);
+                }
+    
+                // Asocia las habilidades al Pokémon
+                $pokemon->habilidades()->sync($habilidadesIds);
+            }
+
+            // Retorna la respuesta con el Pokémon creado y sus habilidades
+            return response()->json([
+                'pokemon' => $pokemon->load('habilidades'),
+                'message' => 'Pokémon creado exitosamente',
+                'status' => 201, // Código de estado 201 para creación exitosa
+            ], 201);
+        } catch (\Exception $e) {
+            // Maneja cualquier error que ocurra durante la creación
+            return response()->json([
+                'message' => 'Error en la creación del Pokémon',
+                'error' => $e->getMessage(),
+                'status' => 500, // Código de estado 500 para error interno del servidor
+            ], 500);
+        }
+    }
+
+    /**
+     * Mostrar un Pokémon específico por su ID.
+     */
+    public function show($id)
+    {
+        // Busca el Pokémon por ID
+        $pokemon = Pokemon::find($id);
+
+        // Si no se encuentra el Pokémon, retorna un mensaje de error
+        if (!$pokemon) {
+            return response()->json([
+                'mensaje' => 'Pokemon no encontrado',
+                'status' => 404, // Código de estado 404 para no encontrado
+            ], 404);
+        }
+
+        $data = [
+            'pokemon' => $pokemon->load('habilidades'),
+            'status' => 200 // Código de estado 200 para éxito
+        ];
+
+        return response()->json($data, 200); // Retorna el Pokémon encontrado con sus habilidades
+    }
+
+    /**
+     * Actualizar un Pokémon existente.
+     */
+    public function update(Request $request, $id)
+    {
+        // Busca el Pokémon por ID
+        $pokemon = Pokemon::find($id);
+
+        // Si no se encuentra el Pokémon, retorna un mensaje de error
+        if (!$pokemon) {
+            return response()->json([
+                'mensaje' => 'Pokemon no encontrado',
+                'status' => 404, // Código de estado 404 para no encontrado
+            ], 404);
+        }
+
+        // Define las reglas de validación para los datos de entrada
+        $validator =  Validator::make($request->all(), [
+            'nombre' => 'required|string',
+            'avatar' => 'required|string',
+            'descripcion' => 'required|string',
+            'peso' => 'required|numeric',
+            'altura' => 'required|numeric',
+            'hp' => 'required|numeric',
+            'ataque' => 'required|numeric',
+            'defensa' => 'required|numeric',
+            'ataque_especial' => 'required|numeric',
+            'defensa_especial' => 'required|numeric',
+            'velocidad' => 'required|numeric',
+            'habilidades' => 'nullable|array' // Habilidades opcionales
+        ]);
+
+        // Si la validación falla, retorna un mensaje de error
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Error en la validación de los datos',
+                'errors' => $validator->errors(),
+                'status' => 400, // Código de estado 400 para Bad Request
+            ], 400);
+        }
+
+        try {
+            // Actualiza los campos del Pokémon con los nuevos datos
+            $pokemon->update($request->only([
+                'nombre', 'avatar', 'descripcion', 'peso', 'altura', 'hp', 
+                'ataque', 'defensa', 'ataque_especial', 'defensa_especial', 'velocidad'
+            ]));
+
+            // Si se proporcionan habilidades, las actualiza y asocia al Pokémon
+            if ($request->has('habilidades')) {
+                foreach ($request->habilidades as $habilidadData) {
+                    // Encuentra la habilidad por ID y la actualiza
+                    $habilidad = Habilidad::find($habilidadData['id']);
+                    if ($habilidad) {
+                        $habilidad->update([
+                            'nombre' => $habilidadData['nombre'] ?? $habilidad->nombre,
+                            'descripcion' => $habilidadData['descripcion'] ?? $habilidad->descripcion,
+                        ]);
+                    }
+                }
+
+                // Sincroniza las habilidades actualizadas con el Pokémon
+                $habilidadesIds = collect($request->habilidades)->pluck('id');
+                $pokemon->habilidades()->sync($habilidadesIds);
+            }
+
+            return response()->json([
+                'mensaje' => 'Pokémon actualizado exitosamente',
+                'pokemon' => $pokemon->load('habilidades'),
+                'status' => 200, // Código de estado 200 para éxito
+            ], 200);
+        } catch (\Exception $e) {
+            // Maneja cualquier error que ocurra durante la actualización
+            return response()->json([
+                'message' => 'Error al actualizar el Pokémon',
+                'error' => $e->getMessage(),
+                'status' => 500, // Código de estado 500 para error interno del servidor
+            ], 500);
+        }
+    }
+
+    /**
+     * Eliminar un Pokémon.
+     */
+    public function destroy($id)
+    {
+        try {
+            // Busca el Pokémon por ID
+            $pokemon = Pokemon::find($id);
+
+            // Si no se encuentra el Pokémon, retorna un mensaje de error
+            if (!$pokemon) {
+                return response()->json([
+                    'mensaje' => 'Pokémon no encontrado',
+                    'status' => 404, // Código de estado 404 para no encontrado
+                ], 404);
+            }
+
+            // Desasocia las habilidades del Pokémon
+            $pokemon->habilidades()->detach();
+
+            // Elimina el Pokémon de la base de datos
+            $pokemon->delete();
+
+            return response()->json([
+                'message' => 'Pokémon eliminado',
+                'status' => 200, // Código de estado 200 para éxito
+            ], 200);
+        } catch (\Exception $e) {
+            // Maneja cualquier error que ocurra durante la eliminación
+            return response()->json([
+                'message' => 'Error al eliminar el Pokémon',
+                'error' => $e->getMessage(),
+                'status' => 500, // Código de estado 500 para error interno del servidor
+            ], 500);
+        }
+    }
+}
+
+```
+
+### Creación de Crontrolador de Habilidad
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Habilidad;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+class HabilidadController extends Controller
+{
+    /**
+     * Mostrar una lista de todas las habilidades.
+     */
+    public function index()
+    {
+        // Obtiene todas las habilidades desde la base de datos
+        $habilidad = Habilidad::all();
+        $data = [
+            'habilidad' => $habilidad, // Habilidades encontradas
+            'status' => 200 // Código de estado 200 para éxito
+        ];
+        return response()->json($data, 200); // Retorna las habilidades encontradas
+    }
+
+    /**
+     * Mostrar el formulario para crear una nueva habilidad.
+     * Este método está vacío porque no se requiere una vista en esta API.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Almacenar una nueva habilidad en la base de datos.
+     */
+    public function store(Request $request)
+    {
+        // Define las reglas de validación para los datos de entrada
+        $validator =  Validator::make($request->all(), [
+            'nombre' => 'required|string', // Nombre es obligatorio y debe ser una cadena de texto
+            'descripcion' => 'required|string', // Descripción es obligatoria y debe ser una cadena de texto
+        ]);
+
+        // Si la validación falla, retorna un mensaje de error con los detalles
+        if ($validator->fails()) {
+            $data = [
+                'mensaje' => 'Error en la validación de los datos',
+                'errores' => $validator->errors(), // Muestra los errores de validación
+                'status' => 400 // Código de estado 400 para Bad Request
+            ];
+            return response()->json($data, 400);
+        }
+
+        try {
+            // Crea la nueva habilidad con los datos proporcionados
+            $habilidad = Habilidad::create([
+                'nombre' => $request->nombre,
+                'descripcion' => $request->descripcion
+            ]);
+
+            // Retorna la respuesta con la habilidad creada y un mensaje de éxito
+            return response()->json([
+                'habilidades' => $habilidad, // La habilidad creada
+                'mensaje' => 'Habilidad creada exitosamente',
+                'status' => 201, // Código de estado 201 para creación exitosa
+            ], 201);
+        } catch (\Exception $e) {
+            // Maneja cualquier error que ocurra durante la creación
+            return response()->json([
+                'mensaje' => 'Error en la creación de la habilidad',
+                'error' => $e->getMessage(),
+                'status' => 500, // Código de estado 500 para error interno del servidor
+            ], 500);
+        }
+    }
+
+    /**
+     * Mostrar una habilidad específica por su ID.
+     */
+    public function show($id)
+    {
+        // Busca la habilidad por ID
+        $habilidad = Habilidad::find($id);
+
+        // Si no se encuentra la habilidad, retorna un mensaje de error
+        if (!$habilidad) {
+            return response()->json([
+                'mensaje' => 'Habilidad no encontrada',
+                'status' => 404 // Código de estado 404 para no encontrado
+            ], 404);
+        }
+
+        // Retorna la habilidad encontrada
+        $data = [
+            'habilidad' => $habilidad, // La habilidad encontrada
+            'status' => 200 // Código de estado 200 para éxito
+        ];
+
+        return response()->json($data, 200); // Retorna la habilidad con estado 200
+    }
+
+    /**
+     * Mostrar el formulario para editar una habilidad existente.
+     * Este método está vacío porque no se requiere una vista en esta API.
+     */
+    public function edit(Habilidad $habilidad)
+    {
+        //
+    }
+
+    /**
+     * Actualizar una habilidad existente.
+     */
+    public function update(Request $request, $id)
+    {
+        // Busca la habilidad por ID
+        $habilidad = Habilidad::find($id);
+
+        // Si no se encuentra la habilidad, retorna un mensaje de error
+        if (!$habilidad) {
+            $data = [
+                'mensaje' => 'Habilidad no encontrada',
+                'status' => 404 // Código de estado 404 para no encontrado
+            ];
+            return response()->json($data, 404);
+        }
+
+        // Define las reglas de validación para los datos de entrada
+        $validator =  Validator::make($request->all(), [
+            'nombre' => 'required|string', // Nombre es obligatorio y debe ser una cadena de texto
+            'descripcion' => 'required|string' // Descripción es obligatoria y debe ser una cadena de texto
+        ]);
+
+        // Si la validación falla, retorna un mensaje de error con los detalles
+        if ($validator->fails()) {
+            $data = [
+                'message' => 'Error en la validación de los datos',
+                'errors' => $validator->errors(), // Muestra los errores de validación
+                'status' => 400 // Código de estado 400 para Bad Request
+            ];
+            return response()->json($data, 400);
+        }
+
+        // Actualiza los campos de la habilidad con los nuevos datos
+        $habilidad->nombre = $request->nombre;
+        $habilidad->descripcion = $request->descripcion;
+
+        // Guarda los cambios en la base de datos
+        $habilidad->save();
+
+        $data = [
+            'mensaje' => 'Habilidad actualizada exitosamente',
+            'habilidad' => $habilidad, // La habilidad actualizada
+            'status' => 200 // Código de estado 200 para éxito
+        ];
+
+        return response()->json($data, 200); // Retorna la habilidad actualizada
+    }
+
+    /**
+     * Eliminar una habilidad específica.
+     */
+    public function destroy($id)
+    {
+        // Busca la habilidad por ID
+        $habilidad = Habilidad::find($id);
+
+        // Si no se encuentra la habilidad, retorna un mensaje de error
+        if (!$habilidad) {
+            $data = [
+                'mensaje' => 'Habilidad no encontrada',
+                'status' => 404 // Código de estado 404 para no encontrado
+            ];
+            return response()->json($data, 404);
+        }
+
+        // Elimina la habilidad de la base de datos
+        $habilidad->delete();
+
+        // Retorna un mensaje indicando que la habilidad fue eliminada
+        $data = [
+            'message' => 'Habilidad eliminada',
+            'habilidad' => $habilidad, // La habilidad eliminada
+            'status' => 200 // Código de estado 200 para éxito
+        ];
+
+        return response()->json($data, 200); // Retorna el mensaje de eliminación exitosa
+    }
+}
+
+```
+
+### Creación de Crontrolador de Habilidad y Pokemon
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\habilidad_pokemon;  // Importa el modelo habilidad_pokemon
+use Illuminate\Http\Request;  // Importa la clase Request
+
+class HabilidadPokemonController extends Controller
+{
+    /**
+     * Muestra una lista de los recursos (sin implementación en este caso).
+     */
+    public function index()
+    {
+        //
+    }
+
+    /**
+     * Muestra el formulario para crear un nuevo recurso (sin implementación en este caso).
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Almacena un nuevo recurso en el almacenamiento (sin implementación en este caso).
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Muestra el recurso especificado (sin implementación en este caso).
+     */
+    public function show(habilidad_pokemon $habilidad_pokemon)
+    {
+        //
+    }
+
+    /**
+     * Muestra el formulario para editar el recurso especificado (sin implementación en este caso).
+     */
+    public function edit(habilidad_pokemon $habilidad_pokemon)
+    {
+        //
+    }
+
+    /**
+     * Actualiza el recurso especificado en el almacenamiento (sin implementación en este caso).
+     */
+    public function update(Request $request, habilidad_pokemon $habilidad_pokemon)
+    {
+        //
+    }
+
+    /**
+     * Elimina el recurso especificado del almacenamiento (sin implementación en este caso).
+     */
+    public function destroy(habilidad_pokemon $habilidad_pokemon)
+    {
+        //
+    }
+}
+
+```
+
+## Creación de la API
+
+Dado que no estaremos interactuando directamente con la base de datos necesitamos mandar a lalmar cada metodo que se encientra en el controlador y esto lo haremos con el comendo de:
+```bash
+composer require laravel/sanctum
+```
+Este nos permitira instalar todas las herramientas necesarias para la api despues agregaremos. 
+
+Despues de crear el archivo tendremos que crear las rutas con las que le aremos peticiones a la API .
+ 
+```php
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PokemonController;
+use App\Http\Controllers\HabilidadController;
+use App\Http\Controllers\UsuarioController;
+
+// Ruta para obtener el usuario autenticado. Utiliza el middleware 'auth:sanctum' para validar la autenticación.
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
+
+// Rutas para el recurso "Pokemons"
+// Muestra todos los pokemones
+Route::get('/pokemons',[PokemonController::class, 'index']);
+// Muestra un pokemon específico por su ID
+Route::get('/pokemons/{id}',[PokemonController::class, 'show']);
+// Crea un nuevo pokemon
+Route::post('/pokemons',[PokemonController::class, 'store']);
+// Actualiza un pokemon específico por su ID
+Route::put('/pokemons/{id}',[PokemonController::class, 'update']);
+// Elimina un pokemon específico por su ID
+Route::delete('/pokemons/{id}',[PokemonController::class, 'destroy']);
+// Busca un pokemon por nombre
+Route::get('/pokemons/buscar/{nombre}',[PokemonController::class, 'buscar']);
+
+// Rutas para el recurso "Habilidades"
+// Muestra todas las habilidades
+Route::get('/habilidades',[HabilidadController::class, 'index']);
+// Muestra una habilidad específica por su ID
+Route::get('/habilidades/{id}',[HabilidadController::class, 'show']);
+// Crea una nueva habilidad
+Route::post('/habilidades',[HabilidadController::class, 'store']);
+// Actualiza una habilidad específica por su ID
+Route::put('/habilidades/{id}',[HabilidadController::class, 'update']);
+// Elimina una habilidad específica por su ID
+Route::delete('/habilidades/{id}',[HabilidadController::class, 'destroy']);
+
+// Rutas para el recurso "Usuarios"
+// Muestra cuántos usuarios existen
+Route::get('/usuarios/hay', [UsuarioController::class, 'cuantosHay']);
+// Muestra todos los usuarios
+Route::get('/usuarios', [UsuarioController::class, 'index']);
+// Muestra un usuario específico por su ID
+Route::get('/usuarios/{id}', [UsuarioController::class, 'show']);
+// Crea un nuevo usuario
+Route::post('/usuarios', [UsuarioController::class, 'store']);
+// Actualiza un usuario específico por su ID
+Route::put('/usuarios/{id}',  [UsuarioController::class, 'update']);
+// Elimina un usuario específico por su ID
+Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy']);
+// Realiza una actualización parcial de un usuario específico por su ID
+Route::patch('/usuarios/{id}', [UsuarioController::class, 'updateParcial']);
+```
+
