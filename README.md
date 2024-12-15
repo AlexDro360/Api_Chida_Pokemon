@@ -1,4 +1,4 @@
-![{FAE33641-F2CE-4381-9B48-783420BAAB95}](https://github.com/user-attachments/assets/ef9d3109-a824-4b18-a143-ec8dc8b01516)# Reporte
+# Reporte
 
 ## Base de datos
 Para la creacion de la API se utilo Laravel en donde se creo la siguiente base de datos 
@@ -15,18 +15,22 @@ Esta tablña gurada la informacion de los pokemones.
 
 ### Tabla Habilidad
 Esta tabla guarda toda la informacion de las habilidades de los pokemones.
+
 ![{84438BBB-6813-440A-9BC8-4B5F878D5289}](https://github.com/user-attachments/assets/1c76c5d4-28f0-4fa8-98ee-e41b44ed4c53)
 
 ### Tabla habilida_pokemon
 Esta tabla surgue de la relacion de muchos a muchos que hay entre las habilidades y los pokemon.
+
 ![{FF87D9F8-7B5B-4DFF-B571-A8CECE6CD2ED}](https://github.com/user-attachments/assets/481ed304-fd85-443b-a18e-e0cfcce653c6)
 
 Para que esta relacion funciones correctamente en los modelos de Pokemon y Habilidad debe de especificarse la realcion de muchos a muchos de la siguiente manera en donde se especifica la tabla que los relaciona y las llavez foraneas de cada uno:
 
 Tabla habilidad:
+
 ![{2B60CE56-150F-4718-9A4F-34C414F08942}](https://github.com/user-attachments/assets/72435116-f367-4675-bc9f-18dfe43b2e36)
 
 Tabla Pokemon:
+
 ![{D9218D7A-BCD3-49A8-87DB-CA31B829EEBF}](https://github.com/user-attachments/assets/e0798466-7287-4234-89e9-ca27c493a710)
 
 ## Controladores 
@@ -37,10 +41,12 @@ Para interactuar con la API y lograr realizar peticiones GET, POST, PUT, DELETE 
 #### Index 
 Este metodo regresa la lista de todos los pokemones que hay en la base de datos con sus habilidades.
 Lo que hace este metodo es primero obtener todos los pokemones de la tabla Pokemon con Pokemon::al(), despues se crear un JSON el cual contiene la lista de pokemon y el estatus de la peticion el cual sera 200 si todo fue correcto asi mismo con load('habilidades') se cargan las habilidades de cada pokemon.
+
 ![{FAE33641-F2CE-4381-9B48-783420BAAB95}](https://github.com/user-attachments/assets/9ceb9439-57d4-4225-84db-7073c2153456)
 
 #### buscar
 Este metodo busca a los pokemones en la base de datos que coincida con el nombre que se le haya pasado al metodo, para esto realiza una consulta a la base de datos filtrando con where el campo nombre que coincida con los nombres, poestriormente regresa un JSON con la lista de pokemon que coincidan y el estatus 200 asi mismo se cargan las habilidades de cada pokemon.
+
 ![{D382EBD5-A913-4E6B-86B4-35B5763555E1}](https://github.com/user-attachments/assets/a2cb847d-8bba-47fc-89da-a8ff4921de53)
 
 #### Store
@@ -56,17 +62,20 @@ Si todo salio bien se retorna el pokemon que se creo con sus habilidades, un men
 ![{8E5A0AF2-149F-4B49-A320-A88C72098F98}](https://github.com/user-attachments/assets/6f733fda-a825-4ebb-9750-f283bf105f26)
 
 Si sugue un error en la creacion del pokemon entra al catch en donde se retorna un mensaje de error, el error de la excepcion y un status 500.
+
 ![{CF5CC40E-4E8D-495D-B516-C4CC445FB562}](https://github.com/user-attachments/assets/000461b2-df78-4f23-abe5-d64e679aaf75)
 
 #### Show
 Este metodo sirve para buscar un pokemon por id para esto se debe pasar el id al metodo y se usa Pokemon::find($id) para buscar el pokemon con ese id en la base de datos.
 Si no se encontro se retorna un mensaje de error y un status de 404, si se encontro se retorna el pokemon con su habilidad y un status de 200.
+
 ![{C2EAFE37-A507-45EC-89CF-22531C9D0CB8}](https://github.com/user-attachments/assets/66717af1-2cf0-4ac8-9886-7932096c92ab)
 
 #### update
 Este metodo se usa para actualizar un pokemon para el cual recibe el id del pokemon y los datos del pokemon.
 Primero se busca el pokemon, si no existe se retorna el mensaje de error con un status de 404.
 Despues se validan los datos a actualizar con validator. Si la validacion falla se retorna el mensaje de error mas el fallo del validator y un status de 400.
+
 ![{28D0557B-BAA5-4F4C-B754-4D078D4D53CA}](https://github.com/user-attachments/assets/dc7d7570-5256-4942-8245-45b9434f73a1)
 
 Despues usando un try catch se actualiza el pokemon usando $pokemon->update y se especifican los campos a actualizar, despues por cada habilidad se busca la habilidad y se actualiza de la misma forma que el pokemon para despues actualizar las realciones con $pokemon->habilidades()->sync($habilidadesIds), finalmente se retorna un mensaje de exito y el pokemon actualizado ademas del status 200.
@@ -74,6 +83,7 @@ Despues usando un try catch se actualiza el pokemon usando $pokemon->update y se
 ![imagen](https://github.com/user-attachments/assets/47598db5-0297-4a67-9d28-82ddb199209a)
 
 Finalmente si ocurre un error en el catch se retorna el mensaje de error mas el error de la excepcion y un status de 500.
+
 ![{AB0C158C-6B0F-4F92-960F-8B095898ED26}](https://github.com/user-attachments/assets/76bbf3ad-bc48-4f5a-a310-69bb07cc247e)
 
 
@@ -81,6 +91,7 @@ Finalmente si ocurre un error en el catch se retorna el mensaje de error mas el 
 Este metodo lo que hace es borrar un pokemon junto con sus habilidaes, para esto primero se busca el pokemon, si no existe se retorna el mensaje de error y el estatus 404.
 Si se encuentra primero se borran las habilidades usando $pokemon->habilidades()->detach(), despues se borra el pokemon usando $pokemon->delete().
 Si todo es correcto se retorna el mensaje de eliminado y un status de 200, si hay un error en el catch se retorna un mensaje de error mas el errorde la excepcion y el estatu 500.
+
 ![{81BAF5F3-C51B-4A11-9585-A8F9BD4FB7CF}](https://github.com/user-attachments/assets/5474574d-09dd-47f7-8be2-af39cb9c1423)
 
 
