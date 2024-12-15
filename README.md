@@ -115,6 +115,53 @@ Si todo es correcto se retorna el mensaje de eliminado y un status de 200, si ha
 
 
 
+### Usuario controller
+Este es el controlador que contiene los metodos para acceder a los datos de la tabla de usuario.
+#### index 
+
+Este metodo obtiene la lista de todos los usuarios que hay en la tabla de usuarios, retorna la lista de usuarios y un status de 200.
+
+![{421DDEF6-82CF-4E77-9EBA-ACE9D36AFEB1}](https://github.com/user-attachments/assets/91ee9a1b-3d42-4c04-90c1-8c0e4aad538a)
+
+![{CFA938EF-1507-4C01-9FA0-187C682C90BA}](https://github.com/user-attachments/assets/50d1ae11-993f-4faa-ba5d-5fcff262f917)
+
+#### store
+Este metodo se usa para crear un nuevo usuario donde recibe los datos del usuario en request. Primero valida que los datos sean correctos con validator, si la validacion falla retorna el mensaje de error con el error de las valicaciones y un status de 400.
+
+![{96947A78-7F17-4ED6-9016-1C4B0EA601FC}](https://github.com/user-attachments/assets/2235aa43-06ed-45d8-81c8-9225e9d00257)
+
+Despues se creara el usuario con Usuario::create, si el usuario no se crea se regresa un mensaje de error y si el usuario se crea correctamente se regresa el usuario creado y el mensaje de exito.
+
+![{BF0C0E80-C197-4C6B-B6F3-219CE433FC91}](https://github.com/user-attachments/assets/9a7ceeb9-08e8-42f7-9483-f90b9b2ee57c)
+
+![{19556DD0-55DE-435B-BF65-F7D0113E157A}](https://github.com/user-attachments/assets/db70be35-5e42-4939-9d45-e1e99378a205)
+
+
+#### show
+Este metodo sirve para buscar un usuario por su id primero busca el usuario usando usuario::find, si el usuario no existe se regresa el mensaje de que no se encontro y si eciste se regresa el usuario que se busco.
+
+![{457B392E-C5F6-41D7-ACC5-C1F342117174}](https://github.com/user-attachments/assets/add1e3b5-4796-4f40-b863-acc86b742420)
+
+![{D3AFBE13-6B02-43E5-A013-8A8357D4F36F}](https://github.com/user-attachments/assets/cee87372-4397-4d28-b63b-fce8bbc4cd71)
+
+
+#### destroy
+Este metodo sirve para eliminar un usuario para lo cual recibe el id del usuario, primero busca el usuario a eliminar, si no existe se regresa un mensaje de que no se encontro, si existe se elimina usando $usuario -> delete() y se regresa un mensaje de que se elimino el usuario.
+
+![{912CEF1B-E7FA-4791-92DD-40F5437AF030}](https://github.com/user-attachments/assets/b2ba06fe-8319-4e44-ad6d-b98c035d0df4)
+
+#### update
+Este metodo sirve para actualizar un usuario para lo cual recibe el id del usuario y los datos del usuario con request, para actualizar primero se busca el usuario si no existe se regresa un mensaje de error que no se encontro el usuario. Despues se validan los datos a actulizar con validator, si la validacion falla se retorna un mensaje de error y los errores de la validacion.
+
+![{66FD5085-4642-420C-8CAA-E968F0197EAE}](https://github.com/user-attachments/assets/6d28fef7-a2c6-41bc-af64-26d66f641be5)
+
+![{6F1C02E1-CB54-4E52-9664-D536FF7D8BCD}](https://github.com/user-attachments/assets/41cbe472-97dc-41b3-a7c9-7313460b4f26)
+
+
+Despues se actualiza los datos del usuario y se retorna el mensaje de exito con el usuario actualizado.
+
+![{B30BAA6B-E54B-4F02-AF25-5EEB24BFBBE0}](https://github.com/user-attachments/assets/eb539368-087e-4ad8-ac44-3d8c38eef5e7)
+
 
 
 
