@@ -9,7 +9,7 @@ Esta tabla contiene a los usuarios de la aplicacion.
 ![{20C1BAE0-A2ED-4D64-9248-D4B7F4B1A4EC}](https://github.com/user-attachments/assets/5b8c7d17-3cca-4b49-bcd8-d12d640401fb)
 
 ### Tabla Pokemon
-Esta tablña gurada la informacion de los pokemones.
+Esta tabla gurada la informacion de los pokemones.
 
 ![{2F96C320-85BE-43B9-87A7-EA97574BE934}](https://github.com/user-attachments/assets/0e437d71-ca23-4b81-b7e4-b84391687ec7)
 
